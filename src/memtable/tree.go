@@ -2,7 +2,7 @@ package memtable
 
 import (
 	"fmt"
-	"strings"
+	"time"
 )
 
 type Color bool
@@ -13,7 +13,8 @@ const (
 )
 
 type Node struct {
-	val    int
+	key    time.Time
+	val    float32
 	color  Color
 	parent *Node
 	left   *Node
@@ -25,16 +26,16 @@ type Tree struct {
 }
 
 func NewTree() *Tree {
-	nilNode := &Node{color: Black, val: 0}
+	nilNode := &Node{color: Black, val: 0.0}
 	return &Tree{root: nilNode}
 }
 
-func newNode(val int) *Node {
-	return &Node{val: val, color: Red}
+func newNode(key time.Time, val float32) *Node {
+	return &Node{key: key, val: val, color: Red}
 }
 
-func (t *Tree) Insert(val int) {
-	newNode := newNode(val)
+func (t *Tree) Insert(key time.Time, val float32) {
+	newNode := newNode(key, val)
 
 	if t.root == nil {
 		t.root = newNode
@@ -49,7 +50,7 @@ func (t *Tree) Insert(val int) {
 
 // Recursive insertion of nodes
 func (t *Tree) insertNode(root, node *Node) {
-	if node.val < root.val {
+	if node.key.Before(root.key) {
 		if root.left == nil {
 			root.left = node
 			node.parent = root
@@ -148,44 +149,27 @@ func (t *Tree) rotateRight(x *Node) {
 	x.parent = y
 }
 
-func (n *Node) String() string {
-	if n == nil {
-		return "nil"
+// Functions to print the node value and color
+func (t *Tree) printTree(node *Node, prefix string, isTail bool) {
+	if node != nil {
+		fmt.Printf("")
+		if isTail {
+			fmt.Printf("└── ")
+			prefix += "    "
+		} else {
+			fmt.Printf("├── ")
+			prefix += "│   "
+		}
+		color := "R"
+		if node.color == Black {
+			color = "B"
+		}
+		fmt.Printf("%s: %v (%s)\n", node.key, node.val, color)
+		t.printTree(node.right, prefix, false)
+		t.printTree(node.left, prefix, true)
 	}
-	color := "B" // Black
-	if n.color == Red {
-		color = "R" // Red
-	}
-	return fmt.Sprintf("%d%s", n.val, color)
 }
 
 func (t *Tree) PrintTree() {
-	if t.root == nil {
-		fmt.Println("Tree is empty")
-		return
-	}
-
-	queue := []*Node{t.root}
-	var level []string
-
-	for len(queue) > 0 {
-		size := len(queue)
-		level = []string{}
-
-		for i := 0; i < size; i++ {
-			node := queue[0]
-			queue = queue[1:]
-
-			level = append(level, node.String())
-
-			if node.left != nil {
-				queue = append(queue, node.left)
-			}
-			if node.right != nil {
-				queue = append(queue, node.right)
-			}
-		}
-
-		fmt.Println(strings.Join(level, " "))
-	}
+	t.printTree(t.root, "", true)
 }
