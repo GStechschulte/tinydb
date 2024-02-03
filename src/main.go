@@ -18,8 +18,7 @@ func main() {
 	tree.Insert(t2, 2.0)
 	tree.Insert(t3, 52.6)
 
-	size := tree.Size()
-	fmt.Printf("Total size of nodes in tree = %d bytes\n", size)
+	fmt.Printf("Total size of nodes in tree = %d bytes\n", tree.Size())
 
 	tree.PrintTree()
 }
