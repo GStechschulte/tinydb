@@ -3,6 +3,7 @@ package memtable
 import (
 	"fmt"
 	"time"
+	"unsafe"
 )
 
 type Color bool
@@ -22,12 +23,13 @@ type Node struct {
 }
 
 type Tree struct {
-	root *Node
+	root      *Node
+	totalSize uintptr
 }
 
 func NewTree() *Tree {
 	nilNode := &Node{color: Black, val: 0.0}
-	return &Tree{root: nilNode}
+	return &Tree{root: nilNode, totalSize: unsafe.Sizeof(*nilNode)}
 }
 
 func newNode(key time.Time, val float32) *Node {
@@ -46,6 +48,13 @@ func (t *Tree) Insert(key time.Time, val float32) {
 
 	t.fixInsert(newNode)
 
+	// Update size of tree as a new node is inserted
+	nodeSize := unsafe.Sizeof(*newNode)
+	t.totalSize += nodeSize
+}
+
+func (t *Tree) Size() uintptr {
+	return t.totalSize
 }
 
 // Recursive insertion of nodes
@@ -149,7 +158,9 @@ func (t *Tree) rotateRight(x *Node) {
 	x.parent = y
 }
 
-// Functions to print the node value and color
+//
+
+// Print the node value and color
 func (t *Tree) printTree(node *Node, prefix string, isTail bool) {
 	if node != nil {
 		fmt.Printf("")

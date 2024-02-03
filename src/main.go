@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"time"
 	"tinydb/src/memtable"
 )
 
 func main() {
+
 	tree := memtable.NewTree()
 
 	t1 := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -14,19 +16,10 @@ func main() {
 
 	tree.Insert(t1, 1.0)
 	tree.Insert(t2, 2.0)
-	tree.Insert(t3, 3.0)
+	tree.Insert(t3, 52.6)
 
-	// Old test cases for value of type int
-	// tree.Insert(13)
-	// tree.Insert(8)
-	// tree.Insert(17)
-	// tree.Insert(1)
-	// tree.Insert(11)
-	// tree.Insert(15)
-	// tree.Insert(25)
-	// tree.Insert(6)
-	// tree.Insert(22)
-	// tree.Insert(27)
+	size := tree.Size()
+	fmt.Printf("Total size of nodes in tree = %d bytes\n", size)
 
 	tree.PrintTree()
 }
