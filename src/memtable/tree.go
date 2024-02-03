@@ -53,7 +53,7 @@ func (t *Tree) Insert(key time.Time, val float32) {
 	t.totalSize += nodeSize
 }
 
-func (t *Tree) Size() uintptr {
+func (t Tree) Size() uintptr {
 	return t.totalSize
 }
 
