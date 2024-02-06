@@ -21,4 +21,8 @@ func main() {
 	fmt.Printf("Total size of nodes in tree = %d bytes\n", tree.Size())
 
 	tree.PrintTree()
+
+	sorted := memtable.InOrderTraversal(tree)
+	fmt.Println("InOrderTraversal of tree:", sorted)
+
 }

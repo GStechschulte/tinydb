@@ -14,12 +14,10 @@ const (
 )
 
 type Node struct {
-	key    time.Time
-	val    float32
-	color  Color
-	parent *Node
-	left   *Node
-	right  *Node
+	key                 time.Time
+	val                 float32
+	color               Color
+	left, right, parent *Node
 }
 
 type Tree struct {
@@ -51,6 +49,7 @@ func (t *Tree) Insert(key time.Time, val float32) {
 	// Update size of tree as a new node is inserted
 	nodeSize := unsafe.Sizeof(*newNode)
 	t.totalSize += nodeSize
+
 }
 
 func (t Tree) Size() uintptr {
@@ -158,7 +157,22 @@ func (t *Tree) rotateRight(x *Node) {
 	x.parent = y
 }
 
-//
+// InOrderTraversal to return the red-black tree in sorted order
+// Time complexity: O(n)
+func InOrderTraversal(t *Tree) map[time.Time]float32 {
+	result := make(map[time.Time]float32)
+
+	var traverse func(node *Node)
+	traverse = func(node *Node) {
+		if node != nil {
+			traverse(node.left)
+			result[node.key] = node.val
+			traverse(node.right)
+		}
+	}
+	traverse(t.root)
+	return result
+}
 
 // Print the node value and color
 func (t *Tree) printTree(node *Node, prefix string, isTail bool) {
