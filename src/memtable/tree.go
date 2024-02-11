@@ -3,7 +3,6 @@ package memtable
 import (
 	"fmt"
 	"time"
-	"unsafe"
 )
 
 type Color bool
@@ -11,6 +10,16 @@ type Color bool
 const (
 	Red   Color = true
 	Black Color = false
+)
+
+const (
+	keySize    = 24
+	valSize    = 4
+	colorSize  = 1
+	leftSize   = 8
+	rightSize  = 8
+	parentSize = 8
+	approxSize = keySize + valSize + colorSize + leftSize + rightSize + parentSize
 )
 
 type Node struct {
@@ -22,12 +31,12 @@ type Node struct {
 
 type Tree struct {
 	root      *Node
-	totalSize uintptr
+	totalSize uint16
 }
 
 func NewTree() *Tree {
 	nilNode := &Node{color: Black, val: 0.0}
-	return &Tree{root: nilNode, totalSize: unsafe.Sizeof(*nilNode)}
+	return &Tree{root: nilNode, totalSize: 0}
 }
 
 func newNode(key time.Time, val float32) *Node {
@@ -47,12 +56,11 @@ func (t *Tree) Insert(key time.Time, val float32) {
 	t.fixInsert(newNode)
 
 	// Update size of tree as a new node is inserted
-	nodeSize := unsafe.Sizeof(*newNode)
-	t.totalSize += nodeSize
+	t.totalSize += approxSize
 
 }
 
-func (t Tree) Size() uintptr {
+func (t Tree) Size() uint16 {
 	return t.totalSize
 }
 
@@ -158,7 +166,6 @@ func (t *Tree) rotateRight(x *Node) {
 }
 
 // InOrderTraversal to return the red-black tree in sorted order
-// Time complexity: O(n)
 func InOrderTraversal(t *Tree) map[time.Time]float32 {
 	result := make(map[time.Time]float32)
 
