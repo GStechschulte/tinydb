@@ -8,6 +8,9 @@ import (
 
 func main() {
 
+	path := "/tmp/example_1.sst"
+	// defer os.RemoveAll(path)
+
 	tree := memtable.NewTree()
 
 	t1 := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -20,9 +23,10 @@ func main() {
 
 	fmt.Printf("Total size of tree = %d bytes\n", tree.Size())
 
-	tree.PrintTree()
+	// tree.PrintTree()
 
-	sorted := memtable.InOrderTraversal(tree)
-	fmt.Println("InOrderTraversal of tree:", sorted)
+	// sorted := memtable.InOrderTraversal(tree)
+	// fmt.Println("In order traversal of tree:", sorted)
 
+	tree.Flush(path)
 }

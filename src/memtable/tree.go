@@ -2,6 +2,7 @@ package memtable
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -179,6 +180,34 @@ func InOrderTraversal(t *Tree) map[time.Time]float32 {
 	}
 	traverse(t.root)
 	return result
+}
+
+// Flush the memtable to disk
+func (t *Tree) Flush(path string) error {
+
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	entries := InOrderTraversal(t)
+
+	return flushMemTable(entries, f)
+}
+
+func flushMemTable(entries map[time.Time]float32, f *os.File) error {
+
+	for key, val := range entries {
+		_, err := f.WriteString(fmt.Sprintf("%s:%f\n", key.Format(time.UnixDate), val))
+		if err != nil {
+			return err
+		}
+	}
+
+	f.Sync()
+
+	return nil
 }
 
 // Print the node value and color
